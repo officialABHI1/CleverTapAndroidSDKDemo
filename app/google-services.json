@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "588962756645",
+    "project_id": "clevertapandroidsdkdemo",
+    "storage_bucket": "clevertapandroidsdkdemo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:588962756645:android:f0e8cc0ac98d466f8a27cc",
+        "android_client_info": {
+          "package_name": "com.shailesha.clevertapandroidsdkdemo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBshTyu9IzgJPK-PUdaUonhFDDJrP5xfBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
