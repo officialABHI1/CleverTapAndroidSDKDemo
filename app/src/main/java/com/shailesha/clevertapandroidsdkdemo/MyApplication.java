@@ -10,6 +10,6 @@ public class MyApplication extends Application {
         ActivityLifecycleCallback.register(this); // Must be called before super.onCreate()
         super.onCreate();
         // Initialize CleverTap SDK
-        // CleverTapAPI.setDebugLevel(CleverTapAPI.LogLevel.DEBUG); // Enable for debugging [cite: 2]
+        CleverTapAPI.setDebugLevel(CleverTapAPI.LogLevel.DEBUG); // Enable for debugging [cite: 2]
     }
 }

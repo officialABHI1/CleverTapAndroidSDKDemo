@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.clevertap.android.sdk.CleverTapAPI; // Import CleverTapAPI
+import com.shailesha.clevertapandroidsdkdemo.BuildConfig; // <<<--- ADD THIS IMPORT
 
 import java.util.HashMap; // Import HashMap
 
@@ -35,15 +36,17 @@ public class MainActivity extends AppCompatActivity {
             clevertapDefaultInstance = CleverTapAPI.getDefaultInstance(getApplicationContext());
         } catch (Exception e) {
             // Log or handle initialization failure
-            Toast.makeText(this, "CleverTap SDK initialization failed", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "CleverTap SDK initialization failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
             // You might want to disable CleverTap related UI elements if initialization fails
         }
 
 
         // Enable CleverTap Debugger - Do this only in debug builds
         // For release builds, you would typically remove or conditionalize this.
-        if (BuildConfig.DEBUG && clevertapDefaultInstance != null) { // Check BuildConfig.DEBUG
+        // Check BuildConfig.DEBUG to ensure this runs only in debug builds
+        if (BuildConfig.DEBUG && clevertapDefaultInstance != null) {
             CleverTapAPI.setDebugLevel(CleverTapAPI.LogLevel.DEBUG);
+            Toast.makeText(this, "CleverTap Debug Mode Enabled", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -59,9 +62,11 @@ public class MainActivity extends AppCompatActivity {
             prodViewedAction.put("Product Name", "CleverTap Android SDK Demo App");
             prodViewedAction.put("Category", "Software");
             prodViewedAction.put("Price", 0.0); // Ensure this is a double or float
-            prodViewedAction.put("Date", new java.util.Date()); // Event dates are automatically tracked by CT
+            // prodViewedAction.put("Date", new java.util.Date()); // Event dates are automatically tracked by CT, so this is optional
             clevertapDefaultInstance.pushEvent("Product Viewed", prodViewedAction);
             Toast.makeText(this, "Event: Product Viewed", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "CleverTap not initialized. 'Product Viewed' event not sent.", Toast.LENGTH_LONG).show();
         }
 
 
@@ -78,30 +83,49 @@ public class MainActivity extends AppCompatActivity {
                 String name = etName.getText().toString().trim();
                 String email = etEmail.getText().toString().trim();
 
-                if (name.isEmpty() || email.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Please enter Name and Email", Toast.LENGTH_SHORT).show();
+                if (name.isEmpty()) {
+                    etName.setError("Name is required");
+                    etName.requestFocus();
                     return;
                 }
+                if (email.isEmpty()) {
+                    etEmail.setError("Email is required");
+                    etEmail.requestFocus();
+                    return;
+                }
+                // Basic email validation (optional, but good practice)
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    etEmail.setError("Enter a valid email address");
+                    etEmail.requestFocus();
+                    return;
+                }
+
 
                 if (clevertapDefaultInstance != null) {
                     HashMap<String, Object> profileUpdate = new HashMap<String, Object>();
                     profileUpdate.put("Name", name);             // String
                     profileUpdate.put("Email", email);           // String
-                    // profileUpdate.put("Identity", email);     // String or number: Use email or a unique ID as identity
                     // IMPORTANT: The Identity field is crucial for identifying users.
                     // Choose a unique identifier. Email is a common choice.
                     // If you use Identity, ensure it's consistent.
-                    profileUpdate.put("MSG-email", true);       // Enable email notifications for this user
-                    profileUpdate.put("MSG-push", true);        // Enable push notifications
-                    profileUpdate.put("MSG-sms", true);         // Enable SMS
-                    profileUpdate.put("MSG-whatsapp", true);    // Enable WhatsApp
+                    profileUpdate.put("Identity", email);     // Using email as Identity for this demo
+
+                    // Optional: User properties for segmentation and personalization
+                    profileUpdate.put("Customer Type", "Demo User");
+
+
+                    // Optional: Explicitly set message subscription preferences
+                    // profileUpdate.put("MSG-email", true);       // Enable email notifications for this user
+                    // profileUpdate.put("MSG-push", true);        // Enable push notifications
+                    // profileUpdate.put("MSG-sms", false);         // Disable SMS
+                    // profileUpdate.put("MSG-whatsapp", false);    // Disable WhatsApp
 
                     clevertapDefaultInstance.onUserLogin(profileUpdate);
-                    // Or, if you want to set a unique CleverTap ID yourself:
-                    // clevertapDefaultInstance.profilePush(profileUpdate); // Use this if you are not using onUserLogin's auto-generated ID
+                    // Or, if you want to set a unique CleverTap ID yourself and not rely on onUserLogin's auto-generation:
+                    // clevertapDefaultInstance.profilePush(profileUpdate);
                     Toast.makeText(MainActivity.this, "Login Event Sent to CleverTap", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MainActivity.this, "CleverTap SDK not initialized.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "CleverTap SDK not initialized. Login event not sent.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -113,12 +137,12 @@ public class MainActivity extends AppCompatActivity {
                 if (clevertapDefaultInstance != null) {
                     // You can add properties to your custom event like this:
                     HashMap<String, Object> testEventProps = new HashMap<>();
-                    testEventProps.put("Source", "Button Click");
+                    testEventProps.put("Source", "Button Click from Demo App");
                     testEventProps.put("Timestamp", new java.util.Date());
                     clevertapDefaultInstance.pushEvent("TEST", testEventProps);
                     Toast.makeText(MainActivity.this, "Event: TEST sent to CleverTap", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MainActivity.this, "CleverTap SDK not initialized.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "CleverTap SDK not initialized. TEST event not sent.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -128,9 +152,13 @@ public class MainActivity extends AppCompatActivity {
         // but can be here for simplicity for this demo.
         // Ensure you have a unique channel ID.
         if (clevertapDefaultInstance != null) {
-            CleverTapAPI.createNotificationChannel(getApplicationContext(),"YourChannelId","Your Channel Name","Your Channel Description", android.app.NotificationManager.IMPORTANCE_HIGH,true);
+            // Channel ID, Name, Description, Importance, Show Badge
+            CleverTapAPI.createNotificationChannel(getApplicationContext(),"CTDemoChannel","CleverTap Demo Channel","Notifications from CleverTap Demo App", android.app.NotificationManager.IMPORTANCE_HIGH,true);
             // You can create multiple channels for different types of notifications
             // CleverTapAPI.createNotificationChannel(getApplicationContext(),"AnotherChannelId","Another Channel","Another Desc", android.app.NotificationManager.IMPORTANCE_DEFAULT,true,"sound_file.mp3");
+            Toast.makeText(this, "Notification Channel Created/Verified", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "CleverTap not initialized. Notification channel not created.", Toast.LENGTH_LONG).show();
         }
     }
 }

@@ -26,6 +26,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+
+    // ADD THIS BLOCK to ensure BuildConfig.java is generated
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 dependencies {
@@ -38,9 +43,7 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    // Add this line for CleverTap SDK
-    implementation 'com.clevertap.android:clevertap-android-sdk:7.4.0' // Check for the latest version
-    implementation 'com.google.firebase:firebase-messaging:23.1.2' // For Push Notifications via FCM
-
-
+    // CleverTap SDK and Firebase Messaging
+    implementation 'com.clevertap.android:clevertap-android-sdk:7.4.0' // User's specified version
+    implementation 'com.google.firebase:firebase-messaging:23.1.2'
 }
