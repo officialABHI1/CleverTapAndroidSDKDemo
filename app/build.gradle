@@ -37,4 +37,10 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
+    // Add this line for CleverTap SDK
+    implementation 'com.clevertap.android:clevertap-android-sdk:7.4.0' // Check for the latest version
+    implementation 'com.google.firebase:firebase-messaging:23.1.2' // For Push Notifications via FCM
+
+
 }

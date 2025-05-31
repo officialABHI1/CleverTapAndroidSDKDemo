@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
-        android:allowBackup="true"
+        android:name=".MyApplication" android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -12,15 +14,52 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CleverTapAndroidSDKDemo"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="CLEVERTAP_ACCOUNT_ID"
+            android:value="Z44-Z4K-K65Z"/>
+        <meta-data
+            android:name="CLEVERTAP_TOKEN"
+            android:value="TEST-341-441"/>
+        <!-- Optional: Specify your CleverTap region if not US.
+             Possible values: "eu1", "in1", "sk1", "sg1"
+        <meta-data
+            android:name="CLEVERTAP_REGION"
+            android:value="YOUR_REGION"/>
+        -->
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="com.clevertap.android.sdk.pushnotification.fcm.FcmMessageListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <!--
+        <activity
+            android:name="com.clevertap.android.sdk.InAppNotificationActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:exported="false"
+            tools:replace="android:exported"/>
+        <activity
+            android:name="com.clevertap.android.sdk.InboxActivity"
+            android:label="App Inbox"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:exported="false"
+            tools:replace="android:exported"/>
+        -->
+
+
     </application>
 
 </manifest>
